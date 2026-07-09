@@ -13,6 +13,14 @@ app.use(express.json());
 
 app.use("/api/expedientes", expedienteRoutes);
 
+// Ruta principal
+app.get("/", (req, res) => {
+    res.json({
+        mensaje: "API Almacenamiento Expedientes funcionando",
+        estado: "OK"
+    });
+});
+
 async function connectMongoDB() {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
