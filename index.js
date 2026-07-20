@@ -1,37 +1,33 @@
 require("dotenv").config();
-
 const express = require("express");
-const mongoose = require("mongoose");
-
+const helmet = require("helmet"); // <--- 1. Requerir Helmet
+const connectDB = require("./config/database");
 const expedienteRoutes = require("./routes/expedienteRoutes");
 
 const app = express();
-
 const PORT = process.env.PORT || 5100;
 
+// Middleware de seguridad HTTP
+app.use(helmet()); // <--- 2. Aplicar Helmet globalmente
+
+// Middleware para entender JSON en el body
 app.use(express.json());
 
-app.use("/api/expedientes", expedienteRoutes);
-
-// Ruta principal
+// Ruta base de prueba para verificar que el servidor esté vivo
 app.get("/", (req, res) => {
-    res.json({
-        mensaje: "API Almacenamiento Expedientes funcionando",
-        estado: "OK"
-    });
+  res.json({
+    mensaje: "API Almacenamiento Expedientes funcionando",
+    estado: "OK"
+  });
 });
 
-async function connectMongoDB() {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("MongoDB connected");
-    } catch (error) {
-        console.error("MongoDB connection error:", error.message);
-    }
-}
+// Enlazar las rutas de tus expedientes
+app.use("/api/expedientes", expedienteRoutes);
 
-connectMongoDB();
+// Conectar a la Base de Datos (MongoDB)
+connectDB();
 
+// Iniciar el servidor
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Servidor de almacenamiento corriendo en el puerto ${PORT}`);
 });
